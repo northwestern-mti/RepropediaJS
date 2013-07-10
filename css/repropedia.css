@@ -1,0 +1,81 @@
+
+/* TERMS tagged in a DOM Element */
+.repropedia_term {
+  /* text-decoration : underline; */
+  margin-top : 0;
+  padding-top : 0;
+  border-bottom: 1px dotted #472F91;
+  color : #472F91;
+  cursor: pointer;
+}
+
+/* TOOLTIP Style ****************************************************/
+.repropedia_tooltip {
+  display : none;
+  background:url(http://www.repropedia.org/sites/repropedia/clients/img/tooltip-background.png) no-repeat;
+  background-size : 100%;
+  padding : 30px 30px 10px 30px;
+  width : 310px;
+  height : 163px;
+  /*
+  font-size : 13px;
+  */
+  font-size : 14px;
+  font-family : Helvetica, Arial, "sans-serif";
+  color: #666;
+  overflow : hidden;
+}
+
+/* tooltip upside down */
+.repropedia_tooltip.bottom {
+  background:url(http://www.repropedia.org/sites/repropedia/clients/img/tooltip-background-bottom.png) no-repeat;
+}
+
+/*  Title */
+.repropedia_tooltip .label a {
+  color: #472F91;
+  font-size : 13pt;
+}
+
+/* Description */
+.repropedia_tooltip .repro_description {
+  height : 90px;
+  margin-top : 0.2em;
+  overflow-x : hidden;
+  overflow-y : scroll;
+  width : 310px;
+}
+/* Terms tagged in the description */
+.repropedia_tooltip .repro_description span.repropedia_term {
+  cursor : pointer;
+}
+
+/* Tagline */
+.repropedia_tooltip .tagline {
+  font-size : 7.8pt;
+  border-top : 1px solid #909090;
+  margin-top : 2px;
+  padding-top : 2px;
+  color : #909090;
+}
+/* Tagline Links */
+.repropedia_tooltip .tagline a {
+  color : #707070;
+}
+.repropedia_tooltip .tagline a:visited {
+  color : #505050;
+}
+
+/* Close Button for mobile devices */
+.repropedia_tooltip .closeBtn {
+  position : absolute;
+  left : 335px;
+  top : 0px;
+  width : 35px;
+  height : 35px;
+}
+.repropedia_tooltip .closeBtn img {
+  width : 100%;
+  height : 100;
+}
+

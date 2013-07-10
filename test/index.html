@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RepropediaJS Test</title>
+    <link href="//www.repropedia.org/sites/repropedia/clients/css/repropedia.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+    <script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+    <script type='text/javascript' src='//www.repropedia.org/sites/repropedia/clients/js/jquery.tools.min.js'></script>
+    <script type='text/javascript' src='../js/repropedia.js'></script>
+
+    <script type='text/javascript'>
+      $(function(){
+
+          $("#go").click(function(e){
+            e.preventDefault();
+            var key = $("#oauth_consumer_key").val();
+
+            Repropedia.init({
+              'CONSUMER_KEY' : key,
+              'regions' : ['.element']
+            });
+
+          });
+        });
+    </script>
+  </head>
+  <body>
+    <div class='container'>
+      <label>Enter your Oauth Consumer Token:</label>
+      <input type='text' id='oauth_consumer_key' size='45'/>
+      <input type='button' id='go' value='go'>
+      <br/>
+      <h3>Sample Text</h3>
+      <div class='element'>
+        The acrosome reaction is an event that occurs when sperm bind to the egg coat (or zona pellucida), causing the chemicals contained in the acrosome to be released.  The acrosome reaction helps the sperm get through the egg’s covering to reach the egg’s plasma membrane and is necessary for fertilization.
+
+      </div>
+    </div>
+  </body>
+</html>
+

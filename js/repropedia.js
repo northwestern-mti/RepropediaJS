@@ -478,7 +478,7 @@ var Repropedia = Repropedia || (function($) {
        if (is_tracking>1) {
         tokens[i]= tokens[i].replace(/<span class='repropedia_term'([^>]*>)/i, "");
        };
-       if (tokens[i].match(/^<\/span/) ) {
+       if (tokens[i].match(/^<\/span/) && is_tracking>0) {
        if (is_tracking>1) {
         tokens[i]= tokens[i].replace("<\/span>", "");
        };

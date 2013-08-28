@@ -13,7 +13,7 @@
 /* TOOLTIP Style ****************************************************/
 .repropedia_tooltip {
   display : none;
-  background:url(http://www.repropedia.org/sites/repropedia/clients/img/tooltip-background.png) no-repeat;
+  background:url(../img/tooltip-background.png) no-repeat;
   background-size : 100%;
   padding : 30px 30px 10px 30px;
   width : 310px;

@@ -7,6 +7,7 @@
   border-bottom: 1px dotted #472F91;
   color : #472F91;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 /* TOOLTIP Style ****************************************************/

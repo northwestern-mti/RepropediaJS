@@ -7,12 +7,13 @@
   border-bottom: 1px dotted #472F91;
   color : #472F91;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 /* TOOLTIP Style ****************************************************/
 .repropedia_tooltip {
   display : none;
-  background:url(http://www.repropedia.org/sites/repropedia/clients/img/tooltip-background.png) no-repeat;
+  background:url(../img/tooltip-background.png) no-repeat;
   background-size : 100%;
   padding : 30px 30px 10px 30px;
   width : 310px;
@@ -28,8 +29,33 @@
 
 /* tooltip upside down */
 .repropedia_tooltip.bottom {
-  background:url(http://www.repropedia.org/sites/repropedia/clients/img/tooltip-background-bottom.png) no-repeat;
+  background:url(../img/tooltip-background-bottom.png) no-repeat;
 }
+
+/* tooltip upside down */
+.repropedia_tooltip.right {
+  margin-left: -75px;
+  background:url(../img/tooltip-background-top-right.png) no-repeat;
+  position: relative;
+}
+.repropedia_tooltip.left {
+  margin-left: 75px;
+ background:url(../img/tooltip-background-top-left.png) no-repeat;
+  position: relative;
+}
+
+.repropedia_tooltip.bottom.left {
+  margin-left: 75px;
+  background:url(../img/tooltip-background-bottom-left.png) no-repeat;
+  position: relative;
+}
+
+.repropedia_tooltip.bottom.right {
+  margin-left: -75px;
+  background:url(../img/tooltip-background-bottom-right.png) no-repeat;
+  position: relative;
+}
+
 
 /*  Title */
 .repropedia_tooltip .label a {

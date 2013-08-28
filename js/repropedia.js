@@ -16,11 +16,12 @@ var Repropedia = Repropedia || (function($) {
    * Default Settings. Can be overriden by this class constructor via init({...});
    */
   var defaultSettings = {
-    'webservice_url'    : 'http://www.repropedia.org',
+    'webservice_url'    : 'https://www.repropedia.org',
     'api_url'           : 'api/1.0',
-    'assets_url'        : 'sites/repropedia/client',
+    'assets_url'        : 'sites/repropedia/clients',
     'term_css_class'    : 'repropedia_term',
-    'tooltip_css_class' : 'repropedia_tooltip'
+    'tooltip_css_class' : 'repropedia_tooltip',
+    'stop_terms'        : []
   };
 
   /**
@@ -57,6 +58,12 @@ var Repropedia = Repropedia || (function($) {
    *
    */
   var dict = {};
+
+  /**  
+   *  List of words not to be tagged.
+   *  IE: ART => Assistive Reproductive Technology.
+   */
+  var stop_terms = [];
 
   /*
    * Time in seconds to cache the RESTful service response. 
@@ -121,7 +128,7 @@ var Repropedia = Repropedia || (function($) {
       log.debug("  ALL TERMS Cache HIT");
       var cache_dict_serialized = localStorage.getItem('repropedia_all_terms_data');
       dict = JSON.parse(cache_dict_serialized);
-      processTerms(dict);
+      processTerms();
     } else {
       // cache miss
       log.debug("  ALL TERMS Cache miss OR expired");
@@ -146,7 +153,23 @@ var Repropedia = Repropedia || (function($) {
   /**
    * Trigger the tagging of known terms.
    */
-  var processTerms = function(dict) {
+  var processTerms = function() {
+    // remove tersms from stop_terms
+    // case insensitive
+    var terms_to_remove = [];
+    var stop_terms_insensitive = stop_terms.map(function(term){
+      return term.toUpperCase();
+    });
+    Object.keys(dict).forEach(function(term){
+      if ($.inArray(term.toUpperCase(), stop_terms_insensitive) >= 0){
+        terms_to_remove.push(term);
+      }
+    });
+    // remove terms
+    terms_to_remove.forEach(function(term){
+      delete dict[term];
+    });
+
     log.debug("Processing terms");
     filterTerms();
     addTooltips();
@@ -299,11 +322,11 @@ var Repropedia = Repropedia || (function($) {
           
           // detect if there is a definition of redirect;       
           var synonym = resp['synonym'];
-          var is_redirect = synonym.length >0;
+          var is_redirect = 'und' in synonym;
           if (is_redirect) {
             log.debug("  Got a redirect");
             // find the term name for the redirect_nid;
-            var redirect_nid = resp['field_term_synonym']['und'][0]['nid'];
+            var redirect_nid = resp['synonym']['und'][0]['nid'];
             var REDIRECT_TEXT = "<br/>The definition for this term is located under: ";
             var redirect_term;
             for(var key in dict) {
@@ -355,6 +378,27 @@ var Repropedia = Repropedia || (function($) {
     // update tooltip with response content
     updateTooltipContent(term_data);
   }
+
+
+  /* DEPRECATED 
+  var tooltipAddTo = function() {
+    $(".repro_tag").tooltip({
+      offset: [10,20],
+      effect: 'slide',
+      events : {
+        def : "click,mouseleave"
+      },
+      delay : 250
+    }).dynamic({ bottom : {direction : 'down', bounce:true} });;
+
+    // Add event listenre for clicks on .repro classe 
+    $(".repro_tag").live('click', function(e) {
+      var nid = $(this).attr('nid');
+      var word = $(this).text();
+      requestDefinitionForTerm(word, nid);   
+    });
+  }
+  */
 
   /*
    * Updates the Tooltip DOM Element with new HTML
@@ -505,6 +549,7 @@ var Repropedia = Repropedia || (function($) {
   var init = exports.init = function(options) {
     options = options || {};
     OAUTH_CONSUMER_KEY = options['CONSUMER_KEY'];
+    stop_terms = options.stop_terms || [];
     parseSettings(options);
     var regionsTmp = options['regions'] ;
     regions = typeof regionsTmp === 'string' ? [regionsTmp] : regionsTmp;

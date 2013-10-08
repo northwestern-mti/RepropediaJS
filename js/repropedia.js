@@ -59,7 +59,7 @@ var Repropedia = Repropedia || (function($) {
    */
   var dict = {};
 
-  /**  
+    /**  
    *  List of words not to be tagged.
    *  IE: ART => Assistive Reproductive Technology.
    */
@@ -71,6 +71,8 @@ var Repropedia = Repropedia || (function($) {
    *    - List of all terms
    *    - Definitions for the selected terms.
    */
+
+
   var TTL = 1800;
   /* Console logger - Helper function
    *   Doesn't block the script if the console is not available
@@ -174,7 +176,6 @@ var Repropedia = Repropedia || (function($) {
     filterTerms();
     addTooltips();
   }
-
 
   /* 
    * Callback for the Request to the list of All Terms 
@@ -326,7 +327,7 @@ var Repropedia = Repropedia || (function($) {
           if (is_redirect) {
             log.debug("  Got a redirect");
             // find the term name for the redirect_nid;
-            var redirect_nid = resp['synonym']['und'][0]['nid'];
+            var redirect_nid = resp['synonym']['und'][0]['nid']; 
             var REDIRECT_TEXT = "<br/>The definition for this term is located under: ";
             var redirect_term;
             for(var key in dict) {
@@ -379,27 +380,6 @@ var Repropedia = Repropedia || (function($) {
     updateTooltipContent(term_data);
   }
 
-
-  /* DEPRECATED 
-  var tooltipAddTo = function() {
-    $(".repro_tag").tooltip({
-      offset: [10,20],
-      effect: 'slide',
-      events : {
-        def : "click,mouseleave"
-      },
-      delay : 250
-    }).dynamic({ bottom : {direction : 'down', bounce:true} });;
-
-    // Add event listenre for clicks on .repro classe 
-    $(".repro_tag").live('click', function(e) {
-      var nid = $(this).attr('nid');
-      var word = $(this).text();
-      requestDefinitionForTerm(word, nid);   
-    });
-  }
-  */
-
   /*
    * Updates the Tooltip DOM Element with new HTML
    */
@@ -410,8 +390,9 @@ var Repropedia = Repropedia || (function($) {
   var addTooltips = function() {
     $('.' + settings['term_css_class']).tooltip({
       tipClass : settings['tooltip_css_class'],
-      offset: [10,20],
+      offset: [0,0],
       effect: 'slide',
+      relative: true,
       events : {
         def : "click,mouseleave"
       },
@@ -449,7 +430,7 @@ var Repropedia = Repropedia || (function($) {
    var decorateTerm = function(term) {
     var nid = dict[term];
     var css_class = settings['term_css_class'];
-    return "<span class='"+css_class+"' nid='"+nid+"' title='$&'>$&</span>";
+    return "<span class='"+css_class+"' nid='"+nid+"' title='$1'>$&</span>";
   }
 
 
@@ -477,7 +458,7 @@ var Repropedia = Repropedia || (function($) {
        }
        log.debug(tokens[i]);
        // Tokens that disabled tracking
-       if (tokens[i].match(/^<a/) || 
+       if (tokens[i].match(/^<a/) ||
            tokens[i].match(/^<h/)) {
          is_tracking = false;
        } 
@@ -491,6 +472,9 @@ var Repropedia = Repropedia || (function($) {
        if (is_tracking) {
          for(var term in dict) {
            var term_singular = term.replace(/s$/gi,'');
+           //add to array
+           //check before with old array if there is a match
+           //not the best algorithm, but might not be noticable
            var re = new RegExp('\\b' + term_singular + '[s]?\\b', 'gi');
            if (tokens[i].match(re)) {
              log.debug("  term found: "+term);
@@ -503,6 +487,40 @@ var Repropedia = Repropedia || (function($) {
      return tokens.join('');
 
   }
+  /* 
+   * Remove nested span class repropedia tags. 
+   */
+  var removeNestedTags = function(blob) {
+
+     log.debug("undecorate blob");
+     var text = ' ' + blob +' ';
+     var tokenizer_regex = /(<[^>]*>)/i;
+     var tokens = text.split(tokenizer_regex);
+
+     var is_tracking = 0;
+     for(var i=0; i<tokens.length; i++) {
+       // skip this non-lcosing tags
+       log.debug(tokens[i]);
+       // Tokens that disabled tracking
+       if (tokens[i].match(/^<span class='repropedia_term'([^>]*>)/i)) {
+         is_tracking++;
+       } 
+       if (is_tracking>1) {
+        tokens[i]= tokens[i].replace(/<span class='repropedia_term'([^>]*>)/i, "");
+       };
+       //just replace that token.
+       // Tokens tha tre-enable tracking
+       if (tokens[i].match(/^<\/span/) && is_tracking>0) {
+       if (is_tracking>1) {
+        tokens[i]= tokens[i].replace("<\/span>", "");
+       };
+         is_tracking--;
+       }
+
+     }
+     return tokens.join('');
+  }
+
 
   /*
    *  Update Target DOM elements with known repropedia terms decorated with  
@@ -511,7 +529,7 @@ var Repropedia = Repropedia || (function($) {
   var filterTerms = function() {
     var regionsList = regions.join(',');
     $(regionsList).each(function() {
-      $(this).html(decorateBlob($(this).html()));
+      $(this).html(removeNestedTags(decorateBlob($(this).html())));
     });
   }
 
@@ -531,6 +549,25 @@ var Repropedia = Repropedia || (function($) {
     regions = [];
   }
 
+    /* DEPRECATED 
+  var tooltipAddTo = function() {
+    $(".repro_tag").tooltip({
+      offset: [10,20],
+      effect: 'slide',
+      events : {
+        def : "click,mouseleave"
+      },
+      delay : 250
+    }).dynamic({ bottom : {direction : 'down', bounce:true} });;
+
+    // Add event listenre for clicks on .repro classe 
+    $(".repro_tag").live('click', function(e) {
+      var nid = $(this).attr('nid');
+      var word = $(this).text();
+      requestDefinitionForTerm(word, nid);   
+    });
+  }
+  */
   /*
    * Parse Settings in Options. Merge with defaultSettings
    */

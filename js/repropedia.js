@@ -522,6 +522,35 @@ var Repropedia = Repropedia || (function($) {
   }
 
 
+  /* 
+   * Remove nested span class repropedia tags. 
+   */
+  var removeNestedTags = function(blob) {
+
+     var text = ' ' + blob +' ';
+     var tokenizer_regex = /(<[^>]*>)/i;
+     var tokens = text.split(tokenizer_regex);
+
+     var is_tracking = 0;
+     for(var i=0; i<tokens.length; i++) {
+       log.debug(tokens[i]);
+       if (tokens[i].match(/^<span class='repropedia_term'([^>]*>)/i)) {
+         is_tracking++;
+       } 
+       if (is_tracking>1) {
+        tokens[i]= tokens[i].replace(/<span class='repropedia_term'([^>]*>)/i, "");
+       };
+       if (tokens[i].match(/^<\/span/) && is_tracking>0) {
+       if (is_tracking>1) {
+        tokens[i]= tokens[i].replace("<\/span>", "");
+       };
+         is_tracking--;
+       }
+
+     }
+     return tokens.join('');
+  }
+
   /*
    *  Update Target DOM elements with known repropedia terms decorated with  
    *     the settings['repropedia_term'] css class. 

@@ -1,4 +1,3 @@
-
 /* TERMS tagged in a DOM Element */
 .repropedia_term {
   /* text-decoration : underline; */
@@ -25,6 +24,7 @@
   font-family : Helvetica, Arial, "sans-serif";
   color: #666;
   overflow : hidden;
+  z-index: 999;
 }
 
 /* tooltip upside down */

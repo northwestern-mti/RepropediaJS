@@ -18,3 +18,5 @@ See http://www.repropedia.org/developers for Getting Started.
 
 
 Browser testing done via [BrowserStack](https://www.browserstack.com).
+
+![Browserstack](misc/Logo-01.svg?raw=true)

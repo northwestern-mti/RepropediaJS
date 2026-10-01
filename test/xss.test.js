@@ -8,16 +8,17 @@ var vm = require('vm');
 var tooltipHtml = [];
 var clickHandler = null;
 var currentWord = '';
+var regionHtml = '';
 var ajaxResponse = null; // null => request error
 var storage = {
   repropedia_all_terms_expiration: String(Math.floor(Date.now() / 1000) + 1000),
-  repropedia_all_terms_data: JSON.stringify({ acrosome: 1 })
+  repropedia_all_terms_data: JSON.stringify({ acrosome: 1, 'c++': 2, '<b>x': 3 })
 };
 
 function $() {
   var o = {
-    each: function() { return o; },
-    html: function(h) { if (h !== undefined) tooltipHtml.push(h); return ''; },
+    each: function(fn) { fn.call(o); return o; },
+    html: function(h) { if (h !== undefined) { tooltipHtml.push(h); return ''; } return regionHtml; },
     text: function() { return currentWord; },
     attr: function() { return '1'; },
     tooltip: function() { return o; },
@@ -42,7 +43,9 @@ var ctx = {
 };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/repropedia.js'), 'utf8') + '\nthis.Repropedia = Repropedia;', ctx);
+regionHtml = 'We study C++ and acrosome.';
 ctx.Repropedia.init({ CONSUMER_KEY: 'k', regions: ['.x'] });
+var initHtml = tooltipHtml.join('');
 assert(clickHandler, 'click handler registered');
 
 var evil = "<img src=x onerror=alert(1)>'\"";
@@ -69,5 +72,14 @@ assert(out.indexOf('ok <b>def</b>') !== -1, 'definition HTML still rendered');
 ajaxResponse = { title: 'Acrosome', nid: 100, path: 'https://www.repropedia.org/x', synonym: {}, definition: 'd' };
 out = click('acrosome');
 assert(out.indexOf("<a href='https://www.repropedia.org/x'>Acrosome</a>") !== -1, 'benign output unchanged: ' + out);
+
+// 4. terms containing regex metacharacters must not throw or break tagging
+// (init above would have thrown "Invalid regular expression" on the 'c++' term before the fix)
+assert(initHtml.indexOf("nid='1'") !== -1, 'tagging still works alongside regex-metachar terms: ' + initHtml);
+
+// 5. redirect term from the service is escaped
+ajaxResponse = { title: 'T', nid: 101, path: '/x', synonym: { und: [{ nid: 3 }] }, definition: 'd' };
+out = click('acrosome');
+assert(out.indexOf('<b>x') === -1 && out.indexOf('&lt;b&gt;x') !== -1, 'redirect term escaped: ' + out);
 
 console.log('PASS: xss.test.js');

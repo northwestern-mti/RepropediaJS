@@ -234,7 +234,7 @@ var Repropedia = Repropedia || (function($) {
 
     // only add the close button to touch devices
     if ('ontouchstart' in document.documentElement) {
-      output+="<div class='closeBtn'><img src='"+img_path+"'></div";
+      output+="<div class='closeBtn'><img src='"+escapeHtml(img_path)+"'></div>";
     }
     return output;
   }
@@ -358,7 +358,7 @@ var Repropedia = Repropedia || (function($) {
                 break;
               }
             }
-            description = REDIRECT_TEXT + redirect_term;
+            description = REDIRECT_TEXT + escapeHtml(redirect_term);
 
           } else {
             // Get the definition
@@ -497,7 +497,7 @@ var Repropedia = Repropedia || (function($) {
            //add to array
            //check before with old array if there is a match
            //not the best algorithm, but might not be noticable
-           var re = new RegExp('\\b' + term_singular + '[s]?\\b', 'gi');
+           var re = new RegExp('\\b' + term_singular.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[s]?\\b', 'gi');
            if (tokens[i].match(re)) {
              log.debug("  term found: "+term);
              replacement=decorateTerm(term);

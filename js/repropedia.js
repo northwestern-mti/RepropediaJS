@@ -99,6 +99,28 @@ var Repropedia = Repropedia || (function($) {
 
 
   /**
+   * Escape a string for safe insertion into HTML text or a quoted attribute.
+   * Used for any value that originates from the page DOM or the web service
+   * title/url, before it is concatenated into tooltip markup.
+   */
+  var escapeHtml = function(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /**
+   * Allow only http(s) and relative URLs in generated links (blocks javascript:).
+   */
+  var safeUrl = function(url) {
+    url = String(url == null ? '' : url).trim();
+    return /^(https?:)?\/\/|^[\/#?]|^[^:]*$/i.test(url) ? url : '#';
+  }
+
+  /**
    * Get unix time in seconds.
    */
   var getUnixTime = function() {
@@ -225,7 +247,7 @@ var Repropedia = Repropedia || (function($) {
    *   string - formatted HTML for the tooltip 
    */
    var showLoaderForTerm = function(term)  {
-    var title = "Looking for '" + term + "'..."; 
+    var title = "Looking for '" + escapeHtml(term) + "'..."; 
     var description=""; 
     var html = generateTooltipContent(title, description);
     updateTooltip(html);
@@ -242,7 +264,7 @@ var Repropedia = Repropedia || (function($) {
    */
   var updateTooltipContent = function(term_definition) {
     // title for term
-    var title = "<a href='"+term_definition.url+"'>"+term_definition.title+"</a>";
+    var title = "<a href='"+escapeHtml(safeUrl(term_definition.url))+"'>"+escapeHtml(term_definition.title)+"</a>";
 
     // Decorate known terms in the definition. Inception-like.
     var description = term_definition.description;
@@ -260,7 +282,7 @@ var Repropedia = Repropedia || (function($) {
    */ 
    var showError = function(term) {
     log.debug("Term not found" + term);
-    var title = "Couldn't find '" + term + "'.";
+    var title = "Couldn't find '" + escapeHtml(term) + "'.";
     var description = "";
     var output = generateTooltipContent(title, description);
     // update tooltip content
